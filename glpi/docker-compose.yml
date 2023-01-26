@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  glpi:
+    build:
+      context: .
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    environment:
+      - TZ=America/Sao_Paulo
+      - GLPI_DB_TYPE=mariadb
+      - GLPI_DB_HOST=db
+      - GLPI_DB_PORT=3306
+      - GLPI_DB_NAME=glpi
+      - GLPI_DB_USER=glpi
+      - GLPI_DB_PASSWORD=glpi
+      - GLPI_DB_ROOT_PASSWORD=root
+    volumes:
+      - ./glpi-data:/var/www/html
+      - ./glpi-config:/var/www/html/config
+      - ./glpi-files:/var/www/html/files
+      
+  db:
+    image: mariadb:10.5
