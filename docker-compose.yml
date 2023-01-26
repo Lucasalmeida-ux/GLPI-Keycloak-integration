@@ -1,34 +1,31 @@
-version: '3.7'
-
+version: '3'
 services:
   glpi:
-    image: fametec/glpi:latest
-    ports:
-      - "80:80"
-    depends_on:
-      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      - TZ=America/Sao_Paulo
-      - GLPI_DB_TYPE=mariadb
-      - GLPI_DB_HOST=db
-      - GLPI_DB_PORT=3306
-      - GLPI_DB_NAME=glpi
       - GLPI_DB_USER=glpi
       - GLPI_DB_PASSWORD=glpi
-      - GLPI_DB_ROOT_PASSWORD=root
+      - GLPI_DB_NAME=glpi
+      - GLPI_DB_HOST=glpi-db
     volumes:
-      - ./glpi-data:/var/www/html/glpi
-      
-  db:
-    image: mariadb:10.5
+      - /glpi:/var/www/html
+      - /etc/localtime:/etc/localtime:ro
     ports:
-      - "3306:3306"
+      - 80:80
+    links:
+      - glpi-db
+  glpi-db:
+    image: mariadb
     environment:
-      - TZ=America/Sao_Paulo
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=glpi
-      - MYSQL_USER=glpi
-      - MYSQL_PASSWORD=glpi
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: glpi
+      MYSQL_USER: glpi
+      MYSQL_PASSWORD: glpi
     volumes:
-      - ./db-data:/var/lib/mysql
-
+      - glpi-db-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+volumes:
+  glpi-db-data:
